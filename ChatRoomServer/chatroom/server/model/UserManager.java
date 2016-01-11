@@ -2,8 +2,11 @@
 
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Vector;
 
+import server.controller.Application;
 import server.controller.UserThread;
+import server.tool.Tools;
 
 /**
  * 用户管理类，管理当前连接的用户：User、Socket、Thread一一对应
@@ -33,18 +36,41 @@ public class UserManager {
 		thread.start();
 	}
 	
-	public void addUser(Socket s,User u){
-		// 添加用户
-		// 通知界面，刷新用户list
+	public void addUser(Socket s,User u,UserThread t){
+		// 1、添加用户
+		users.put(s, u);
+		// 2、反馈给该用户，成功登陆
+		String msg = "SERVER：欢迎登陆聊天室！";
+		t.sendMessage(Tools.MSG_SERVER + msg);
+		// 3、更新界面，刷新用户list
+		Application.getInstance().getWindow().invalidate("SERVER： " + u.getName() + " 已上线！！", Tools.INVALIDATE_UPDATE_USERS);
 	}
 	
-	public void removeUser(Socket socket) {
-		// 用户下线，删除该用户的socket、thread、user对象
-		// 通知界面刷新用户列表
+	public void removeUser(Socket s ,UserThread t) {
+		// 1、反馈给该用户，成功登陆
+		String msg = "SERVER：您已下线，欢迎再来！";
+		t.sendMessage(Tools.MSG_SERVER + msg);
+		// 2、用户下线，删除该用户的socket、thread、user对象
+		String username = users.remove(s).getName();
+		threads.remove(s).stopThread();
+		// 3、更新界面，刷新用户list
+		Application.getInstance().getWindow().invalidate("SERVER： " + username + " 已下线！！", Tools.INVALIDATE_UPDATE_USERS);
 	}
 	
 	public void clearUser(){
 		users.clear();
 		threads.clear();
+	}
+	
+	/**
+	 * 返回当前所有在线用户名
+	 * @return
+	 */
+	public Vector<String> getUsersName(){
+		Vector<String> v = new Vector<>();
+		for(User u: users.values()){
+			v.add(u.getName());
+		}
+		return v;
 	}
 }

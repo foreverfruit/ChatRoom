@@ -24,9 +24,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
 import server.controller.ServerManager;
-import server.controller.Tools;
 import server.controller.UserThread;
 import server.model.UserManager;
+import server.tool.Tools;
 
 /**
  * 应用主窗体
@@ -166,30 +166,41 @@ public class MainWindow extends JFrame{
 		btSendMsg.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// 构造消息
-				String msg = Tools.MSG_SERVER + tfMesssage.getText();
-				// 发送给每一个在线用户
-				if(!UserManager.getInstance().threads.isEmpty()){
-					for(UserThread t : UserManager.getInstance().threads.values()){
-						t.sendMessage(msg);
+				String txt = tfMesssage.getText();
+				if( txt!=null && !txt.isEmpty() ){
+					// 构造消息
+					String msg = "SERVER：" + txt;
+					// 发送给每一个在线用户
+					if(!UserManager.getInstance().threads.isEmpty()){
+						for(UserThread t : UserManager.getInstance().threads.values()){
+							t.sendMessage(Tools.MSG_SERVER + msg);
+						}
 					}
+					// 消息记录添加该消息记录
+					invalidate(msg, Tools.INVALIDATE_SEND_MSG);
+				}else{
+					showMessageBox("节约资源哦，俺们不发送空消息");
 				}
-				// 消息记录添加该消息记录
-				ServerManager.getInstance().addMessage(null, msg);
 			}
 		});
 	}
 	
 	/**
 	 * 
-	 * @param msg 若是因为消息刷新，则为消息内容，否则为null
+	 * @param msg 经过处理，可直接输出的消息记录
 	 * @param flag 刷新的类型标志
 	 */
 	public void invalidate(String msg,int flag){
+		// 先保存消息
+		if( msg!=null && !msg.isEmpty() ){
+			ServerManager.getInstance().msgRecord.append( msg + "\n\r" );
+		}
+			
 		if( flag == Tools.INVALIDATE_START_SERVER ){
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
+					chatRecordTextArea.setText(ServerManager.getInstance().msgRecord.toString());
 					tfPort.setEnabled(false);
 					btStar.setEnabled(false);
 					btSendMsg.setEnabled(true);
@@ -200,10 +211,34 @@ public class MainWindow extends JFrame{
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
+					chatRecordTextArea.setText(ServerManager.getInstance().msgRecord.toString());
 					tfPort.setEnabled(true);
 					btStar.setEnabled(true);
 					btSendMsg.setEnabled(false);
 					btStop.setEnabled(false);
+				}
+			});
+		}else if( flag == Tools.INVALIDATE_SEND_MSG ){
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					chatRecordTextArea.setText(ServerManager.getInstance().msgRecord.toString());
+					tfMesssage.setText("");
+				}
+			});
+		}else if ( flag == Tools.INVALIDATE_UPDATE_USERS ) { 
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					chatRecordTextArea.setText(ServerManager.getInstance().msgRecord.toString());
+					userList.setListData(UserManager.getInstance().getUsersName());
+				}
+			});
+		}else if ( flag == Tools.INVALIDATE_DISPATCH_MSG ){
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					chatRecordTextArea.setText(ServerManager.getInstance().msgRecord.toString());
 				}
 			});
 		}

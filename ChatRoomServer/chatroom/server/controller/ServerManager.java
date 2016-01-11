@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import server.model.UserManager;
+import server.tool.Tools;
 
 /**
  * 连接管理类，管理服务器的serverSocket
@@ -54,7 +55,7 @@ public class ServerManager {
 				workThread.start();
 				// 服务器开启，刷新界面
 				isServerStart = true;
-				Application.getInstance().getWindow().invalidate(null, Tools.INVALIDATE_START_SERVER);
+				Application.getInstance().getWindow().invalidate(Tools.STRING_SERVER_START, Tools.INVALIDATE_START_SERVER);
 			}
 		}catch(Exception e){
 			e.printStackTrace();
@@ -73,12 +74,13 @@ public class ServerManager {
 		if(!UserManager.getInstance().threads.isEmpty()){
 			Iterator<Map.Entry<Socket,UserThread>> it = UserManager.getInstance().threads.entrySet().iterator();
 			while (it.hasNext()) {
-				Map.Entry<Socket,UserThread> entry = (Map.Entry<Socket,UserThread>) it.next();
-				entry.getValue().sendMessage(Tools.MSG_SERVER_CLOSE);
+				UserThread thread = it.next().getValue();
+				thread.sendMessage(Tools.MSG_SERVER_CLOSE);
+				thread.stopThread();
 			}
 		}
 		try{
-			// 停止所有工作线程
+			// 停止所有连接以及工作线程
 			for(Socket s : UserManager.getInstance().threads.keySet()){
 				s.close();
 			}
@@ -92,27 +94,24 @@ public class ServerManager {
 		// 删除在线用户
 		UserManager.getInstance().clearUser();
 		// 通知界面刷新
-		Application.getInstance().getWindow().invalidate(null, Tools.INVALIDATE_STOP_SERVER);
-	}
-	
-	/**
-	 * 添加消息到消息记录
-	 * @param socket 消息发送者的socket，若为null，表示为服务器发送的消息
-	 * @param string 消息内容
-	 */
-	public void addMessage(Socket socket, String string) {
-		// 获得一条用户聊天消息，添加到msg中
-		
-		// 通知界面刷新TextArea
-		
+		Application.getInstance().getWindow().invalidate(Tools.STRING_SERVER_CLOSE, Tools.INVALIDATE_STOP_SERVER);
 	}
 	
 	/**
 	 * 转发消息到其他用户
-	 * @param socket 消息发送者的socket
-	 * @param string 消息内容
+	 * @param string 消息全内容
 	 */
-	public void dispatchMessage(Socket socket, String string){
-		
+	public void dispatchMessage(String msg){
+		// 分发消息
+		if(!UserManager.getInstance().threads.isEmpty()){
+			Iterator<Map.Entry<Socket,UserThread>> it = UserManager.getInstance().threads.entrySet().iterator();
+			while (it.hasNext()) {
+				UserThread thread = it.next().getValue();
+				thread.sendMessage(msg);
+			}
+		}
+		// 提取显示的消息并显示
+		Application.getInstance().
+		getWindow().invalidate(msg.substring(Tools.MSG_CLIENT.length()),Tools.INVALIDATE_DISPATCH_MSG);
 	}
 }

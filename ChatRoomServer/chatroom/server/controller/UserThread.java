@@ -7,6 +7,7 @@ import java.net.Socket;
 
 import server.model.User;
 import server.model.UserManager;
+import server.tool.Tools;
 
 /**
  * User收发消息的工作线程
@@ -18,6 +19,7 @@ public class UserThread extends Thread{
 	public Socket socket;
 	public PrintWriter writer;
 	public BufferedReader reader;
+	// TODO 线程池，用来发信息
 	
 	public UserThread(Socket socket){
 		try{
@@ -36,23 +38,25 @@ public class UserThread extends Thread{
 		while(true){
 			try{
 				// 清空上一条消息
-				msg.delete(0, msg.length()-1);
+				msg.delete(0, msg.length());
+				// 读取消息
 				String tmp = "";
 				while( !( ( tmp = reader.readLine() ) == null ) ){
 					msg.append(tmp);
 				}
-				// 本条消息读完，解析 TODO 
+				
+				// 解析 
 				if(msg.toString().startsWith(Tools.MSG_CLIENT)){
-					// 1、用户一般消息，刷新界面
-					ServerManager.getInstance().addMessage(socket,msg.toString());
+					// 1、用户一般消息:保存-分发-显示
+					ServerManager.getInstance().dispatchMessage(msg.toString());
 				}else if(msg.toString().startsWith(Tools.MSG_CLIENT_ONLINE)){
-					// 2、用户连接消息，解析该用户名称，创建User对象，保存到Manager中，反馈一条成功登陆信息给用户
-					User user = new User(msg.toString().substring("@#onLine#@".length()),
+					// 2、用户连接消息，解析该用户名称，创建User对象，更新user
+					User user = new User(msg.toString().substring(Tools.MSG_CLIENT_ONLINE.length()),
 										 socket.getInetAddress().getHostAddress() );
-					UserManager.getInstance().addUser(socket, user);
+					UserManager.getInstance().addUser(socket, user, this);
 				}else if( msg.toString().startsWith(Tools.MSG_CLIENT_OFFLINE) ){
-					// 3、用户下线消息
-					UserManager.getInstance().removeUser(socket);
+					// 3、用户下线消息，更新user
+					UserManager.getInstance().removeUser(socket,this);
 				}
 			}catch(Exception e){
 				e.printStackTrace();
@@ -64,6 +68,26 @@ public class UserThread extends Thread{
 	public void sendMessage(String msg){
 		writer.println(msg);
 		writer.flush();
+	}
+	
+	/**
+	 * 关闭该Thread中的io资源，并Stop该线程
+	 */
+	@SuppressWarnings("deprecation")
+	public void stopThread(){
+		try{
+			if(writer!=null){
+				writer.close();
+				writer = null;
+			}
+			if(reader!=null){
+				reader.close();
+				reader = null;
+			}
+			this.stop();
+		}catch(Exception e ){
+			e.printStackTrace();
+		}
 	}
 }
 
