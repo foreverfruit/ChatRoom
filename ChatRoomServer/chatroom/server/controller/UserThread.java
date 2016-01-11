@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import server.model.User;
 import server.model.UserManager;
@@ -19,7 +21,8 @@ public class UserThread extends Thread{
 	public Socket socket;
 	public PrintWriter writer;
 	public BufferedReader reader;
-	// TODO 线程池，用来发信息
+	//  线程池，用来发信息
+	public ExecutorService threadPool = Executors.newCachedThreadPool();
 	
 	public UserThread(Socket socket){
 		try{
@@ -65,9 +68,14 @@ public class UserThread extends Thread{
 	}
 	
 	// 发送消息到该用户
-	public void sendMessage(String msg){
-		writer.println(msg);
-		writer.flush();
+	public void sendMessage(final String msg){
+		threadPool.execute(new Runnable() {
+			@Override
+			public void run() {
+				writer.println(msg);
+				writer.flush();
+			}
+		});
 	}
 	
 	/**
@@ -85,6 +93,8 @@ public class UserThread extends Thread{
 				reader = null;
 			}
 			this.stop();
+			// 关闭线程池
+			threadPool.shutdown();
 		}catch(Exception e ){
 			e.printStackTrace();
 		}

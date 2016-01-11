@@ -1,7 +1,10 @@
 ﻿package server.model;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Vector;
 
 import server.controller.Application;
@@ -53,11 +56,30 @@ public class UserManager {
 		// 2、用户下线，删除该用户的socket、thread、user对象
 		String username = users.remove(s).getName();
 		threads.remove(s).stopThread();
+		try{
+				s.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 		// 3、更新界面，刷新用户list
 		Application.getInstance().getWindow().invalidate("SERVER： " + username + " 已下线！！", Tools.INVALIDATE_UPDATE_USERS);
 	}
 	
 	public void clearUser(){
+		// 关闭资源
+		if(!threads.isEmpty()){
+			Iterator<Entry<Socket, UserThread>>  it = threads.entrySet().iterator();
+			while(it.hasNext()){
+				Entry<Socket, UserThread> entry = it.next();
+				entry.getValue().stopThread();
+				try {
+					entry.getKey().close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		// 清空集合
 		users.clear();
 		threads.clear();
 	}
