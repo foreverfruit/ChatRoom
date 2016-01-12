@@ -26,7 +26,7 @@ import javax.swing.border.TitledBorder;
 import server.controller.ServerManager;
 import server.controller.UserThread;
 import server.model.UserManager;
-import server.tool.Tools;
+import server.tool.Constants;
 
 /**
  * 应用主窗体
@@ -64,9 +64,9 @@ public class MainWindow extends JFrame{
 		// 获取屏幕大小
 	    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	    // 设置窗体大小
-	    setSize(Tools.WIN_WIDTH,Tools.WIN_HEIGHT);
+	    setSize(Constants.WIN_WIDTH,Constants.WIN_HEIGHT);
 	    // 让窗口居中显示 
-	    setLocation(screenSize.width/2-Tools.WIN_WIDTH/2,screenSize.height/2-Tools.WIN_HEIGHT/2);
+	    setLocation(screenSize.width/2-Constants.WIN_WIDTH/2,screenSize.height/2-Constants.WIN_HEIGHT/2);
 	    // 窗口大小固定
 		setResizable(false);
 		// 添加组件
@@ -109,14 +109,13 @@ public class MainWindow extends JFrame{
 		messagePanel.add(tfMesssage,BorderLayout.CENTER);
 		messagePanel.add(btSendMsg,BorderLayout.EAST);
 		messagePanel.setBorder(new TitledBorder("写消息"));
-		messagePanel.setBorder(new TitledBorder("写消息"));  
 
 		rightPanel = new JPanel(new BorderLayout());
 		rightPanel.add(messagePanel,BorderLayout.SOUTH);
 		rightPanel.add(chatRecordPanel,BorderLayout.CENTER);
 		
 		mainPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, userListPanel,rightPanel);  
-		mainPanel.setDividerLocation(Tools.WIN_WIDTH/4); 
+		mainPanel.setDividerLocation(Constants.WIN_WIDTH/4); 
 		mainPanel.setEnabled(false);
 		
 		this.add(topPanel,BorderLayout.NORTH);
@@ -173,11 +172,11 @@ public class MainWindow extends JFrame{
 					// 发送给每一个在线用户
 					if(!UserManager.getInstance().threads.isEmpty()){
 						for(UserThread t : UserManager.getInstance().threads.values()){
-							t.sendMessage(Tools.MSG_SERVER + msg);
+							t.sendMessage(Constants.MSG_SERVER + msg);
 						}
 					}
 					// 消息记录添加该消息记录
-					invalidate(msg, Tools.INVALIDATE_SEND_MSG);
+					invalidate(msg, Constants.INVALIDATE_SEND_MSG);
 				}else{
 					showMessageBox("节约资源哦，俺们不发送空消息");
 				}
@@ -196,7 +195,7 @@ public class MainWindow extends JFrame{
 			ServerManager.getInstance().msgRecord.append( msg + "\n\r" );
 		}
 			
-		if( flag == Tools.INVALIDATE_START_SERVER ){
+		if( flag == Constants.INVALIDATE_START_SERVER ){
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
@@ -207,7 +206,7 @@ public class MainWindow extends JFrame{
 					btStop.setEnabled(true);
 				}
 			});
-		}else if( flag == Tools.INVALIDATE_STOP_SERVER ){
+		}else if( flag == Constants.INVALIDATE_STOP_SERVER ){
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
@@ -218,7 +217,7 @@ public class MainWindow extends JFrame{
 					btStop.setEnabled(false);
 				}
 			});
-		}else if( flag == Tools.INVALIDATE_SEND_MSG ){
+		}else if( flag == Constants.INVALIDATE_SEND_MSG ){
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
@@ -226,7 +225,7 @@ public class MainWindow extends JFrame{
 					tfMesssage.setText("");
 				}
 			});
-		}else if ( flag == Tools.INVALIDATE_UPDATE_USERS ) { 
+		}else if ( flag == Constants.INVALIDATE_UPDATE_USERS ) { 
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
@@ -234,7 +233,7 @@ public class MainWindow extends JFrame{
 					userList.setListData(UserManager.getInstance().getUsersName());
 				}
 			});
-		}else if ( flag == Tools.INVALIDATE_DISPATCH_MSG ){
+		}else if ( flag == Constants.INVALIDATE_DISPATCH_MSG ){
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {

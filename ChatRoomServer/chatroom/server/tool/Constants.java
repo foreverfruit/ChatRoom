@@ -1,6 +1,6 @@
 package server.tool;
 
-public class Tools {
+public class Constants {
 	// 窗体宽高常量
 	public static final int WIN_HEIGHT = 400;
 	public static final int WIN_WIDTH = 600;

@@ -9,7 +9,7 @@ import java.util.Vector;
 
 import server.controller.Application;
 import server.controller.UserThread;
-import server.tool.Tools;
+import server.tool.Constants;
 
 /**
  * 用户管理类，管理当前连接的用户：User、Socket、Thread一一对应
@@ -44,15 +44,15 @@ public class UserManager {
 		users.put(s, u);
 		// 2、反馈给该用户，成功登陆
 		String msg = "SERVER：欢迎登陆聊天室！";
-		t.sendMessage(Tools.MSG_SERVER + msg);
+		t.sendMessage(Constants.MSG_SERVER + msg);
 		// 3、更新界面，刷新用户list
-		Application.getInstance().getWindow().invalidate("SERVER： " + u.getName() + " 已上线！！", Tools.INVALIDATE_UPDATE_USERS);
+		Application.getInstance().getWindow().invalidate("SERVER： " + u.getName() + " 已上线！！", Constants.INVALIDATE_UPDATE_USERS);
 	}
 	
 	public void removeUser(Socket s ,UserThread t) {
 		// 1、反馈给该用户，成功登陆
 		String msg = "SERVER：您已下线，欢迎再来！";
-		t.sendMessage(Tools.MSG_SERVER + msg);
+		t.sendMessage(Constants.MSG_SERVER + msg);
 		// 2、用户下线，删除该用户的socket、thread、user对象
 		String username = users.remove(s).getName();
 		threads.remove(s).stopThread();
@@ -62,7 +62,7 @@ public class UserManager {
 			e.printStackTrace();
 		}
 		// 3、更新界面，刷新用户list
-		Application.getInstance().getWindow().invalidate("SERVER： " + username + " 已下线！！", Tools.INVALIDATE_UPDATE_USERS);
+		Application.getInstance().getWindow().invalidate("SERVER： " + username + " 已下线！！", Constants.INVALIDATE_UPDATE_USERS);
 	}
 	
 	public void clearUser(){

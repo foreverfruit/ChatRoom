@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
 
 import server.model.User;
 import server.model.UserManager;
-import server.tool.Tools;
+import server.tool.Constants;
 
 /**
  * User收发消息的工作线程
@@ -49,15 +49,15 @@ public class UserThread extends Thread{
 				}
 				
 				// 解析 
-				if(msg.toString().startsWith(Tools.MSG_CLIENT)){
+				if(msg.toString().startsWith(Constants.MSG_CLIENT)){
 					// 1、用户一般消息:保存-分发-显示
 					ServerManager.getInstance().dispatchMessage(msg.toString());
-				}else if(msg.toString().startsWith(Tools.MSG_CLIENT_ONLINE)){
+				}else if(msg.toString().startsWith(Constants.MSG_CLIENT_ONLINE)){
 					// 2、用户连接消息，解析该用户名称，创建User对象，更新user
-					User user = new User(msg.toString().substring(Tools.MSG_CLIENT_ONLINE.length()),
+					User user = new User(msg.toString().substring(Constants.MSG_CLIENT_ONLINE.length()),
 										 socket.getInetAddress().getHostAddress() );
 					UserManager.getInstance().addUser(socket, user, this);
-				}else if( msg.toString().startsWith(Tools.MSG_CLIENT_OFFLINE) ){
+				}else if( msg.toString().startsWith(Constants.MSG_CLIENT_OFFLINE) ){
 					// 3、用户下线消息，更新user
 					UserManager.getInstance().removeUser(socket,this);
 				}
