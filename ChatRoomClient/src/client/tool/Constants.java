@@ -20,4 +20,7 @@ public class Constants {
 	
 	public static final String STRING_SERVER_START = "SERVER：服务器启动成功...";
 	public static final String STRING_SERVER_CLOSE = "SERVER：服务器已关闭...";	// 关闭服务器在服务器端显示的消息
+	
+	// IP正则表达式
+	public static final String IP_REG = "([1-9]|[1-9]//d|1//d{2}|2[0-4]//d|25[0-5])(//.(//d|[1-9]//d|1//d{2}|2[0-4]//d|25[0-5])){3}";
 }
