@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import server.model.UserManager;
-import server.tool.Tools;
+import server.tool.Constants;
 
 /**
  * 连接管理类，管理服务器的serverSocket
@@ -20,7 +20,7 @@ public class ServerManager {
 	// 服务器工作线程：只作用接受客服端的连接
 	public Thread workThread;
 	// 聊天记录
-	public StringBuilder msgRecord = new StringBuilder();	
+	public StringBuffer msgRecord = new StringBuffer();	
 	
 	// 单例
 	private static ServerManager instance = null;
@@ -55,7 +55,7 @@ public class ServerManager {
 				workThread.start();
 				// 服务器开启，刷新界面
 				isServerStart = true;
-				Application.getInstance().getWindow().invalidate(Tools.STRING_SERVER_START, Tools.INVALIDATE_START_SERVER);
+				Application.getInstance().getWindow().invalidate(Constants.STRING_SERVER_START, Constants.INVALIDATE_START_SERVER);
 			}
 		}catch(Exception e){
 			e.printStackTrace();
@@ -75,7 +75,7 @@ public class ServerManager {
 			Iterator<Map.Entry<Socket,UserThread>> it = UserManager.getInstance().threads.entrySet().iterator();
 			while (it.hasNext()) {
 				UserThread thread = it.next().getValue();
-				thread.sendMessage(Tools.MSG_SERVER_CLOSE);
+				thread.sendMessage(Constants.MSG_SERVER_CLOSE);
 				thread.stopThread();
 			}
 		}
@@ -94,7 +94,7 @@ public class ServerManager {
 		// 删除在线用户
 		UserManager.getInstance().clearUser();
 		// 通知界面刷新
-		Application.getInstance().getWindow().invalidate(Tools.STRING_SERVER_CLOSE, Tools.INVALIDATE_STOP_SERVER);
+		Application.getInstance().getWindow().invalidate(Constants.STRING_SERVER_CLOSE, Constants.INVALIDATE_STOP_SERVER);
 	}
 	
 	/**
@@ -112,6 +112,6 @@ public class ServerManager {
 		}
 		// 提取显示的消息并显示
 		Application.getInstance().
-		getWindow().invalidate(msg.substring(Tools.MSG_CLIENT.length()),Tools.INVALIDATE_DISPATCH_MSG);
+		getWindow().invalidate(msg.substring(Constants.MSG_CLIENT.length()),Constants.INVALIDATE_DISPATCH_MSG);
 	}
 }

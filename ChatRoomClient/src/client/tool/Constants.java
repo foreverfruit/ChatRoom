@@ -1,6 +1,6 @@
-package server.tool;
+package client.tool;
 
-public class Tools {
+public class Constants {
 	// 窗体宽高常量
 	public static final int WIN_HEIGHT = 400;
 	public static final int WIN_WIDTH = 600;
@@ -11,6 +11,10 @@ public class Tools {
 	public static final int INVALIDATE_DISPATCH_MSG = 10004;
 	public static final int INVALIDATE_UPDATE_USERS = 10005;
 	
+	public static final int INVALIDATE_CONNECTED = 10006;
+	public static final int INVALIDATE_DISCONNECTED = 10007;
+	public static final int INVALIDATE_REC_MSG = 10008;
+	
 	// 常量消息
 	public static final String MSG_CLIENT_OFFLINE = "#@#offLine#@#";
 	public static final String MSG_CLIENT_ONLINE = "#@#onLine#@#";
@@ -20,4 +24,7 @@ public class Tools {
 	
 	public static final String STRING_SERVER_START = "SERVER：服务器启动成功...";
 	public static final String STRING_SERVER_CLOSE = "SERVER：服务器已关闭...";	// 关闭服务器在服务器端显示的消息
+	
+	// IP正则表达式
+	public static final String IP_REG = "((?:(?:25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))\\.){3}(?:25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d))))";   
 }
