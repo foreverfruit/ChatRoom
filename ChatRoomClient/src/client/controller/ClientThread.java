@@ -31,16 +31,9 @@ public class ClientThread extends Thread{
 	@Override
 	public void run() {
 		// 用户线程永远工作接收用户的来信
-		StringBuilder msg = new StringBuilder();
 		while(true){
 			try{
-				// 清空上一条消息
-				msg.delete(0, msg.length());
-				// 读取消息
-				String tmp = "";
-				while( !( ( tmp = reader.readLine() ) == null ) ){
-					msg.append(tmp);
-				}
+				String msg = reader.readLine();
 				
 				System.out.println(msg.toString());
 				
