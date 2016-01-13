@@ -79,16 +79,16 @@ public class ServerManager {
 				thread.stopThread();
 			}
 		}
-		try{
-			// 停止所有连接以及工作线程
-			for(Socket s : UserManager.getInstance().threads.keySet()){
-				s.close();
-			}
-			// 关闭服务器
-			serverSocket.close();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+//		try{
+//			// 停止所有连接以及工作线程
+//			for(Socket s : UserManager.getInstance().threads.keySet()){
+//				s.close();
+//			}
+//			// 关闭服务器
+//			serverSocket.close();
+//		}catch(Exception e){
+//			e.printStackTrace();
+//		}
 		serverSocket = null;
 		isServerStart = false;
 		// 删除在线用户
@@ -101,12 +101,15 @@ public class ServerManager {
 	 * 转发消息到其他用户
 	 * @param string 消息全内容
 	 */
-	public void dispatchMessage(String msg){
+	public void dispatchMessage(UserThread t,String msg){
 		// 分发消息
 		if(!UserManager.getInstance().threads.isEmpty()){
 			Iterator<Map.Entry<Socket,UserThread>> it = UserManager.getInstance().threads.entrySet().iterator();
 			while (it.hasNext()) {
 				UserThread thread = it.next().getValue();
+				if( thread == t){
+					continue;
+				}
 				thread.sendMessage(msg);
 			}
 		}

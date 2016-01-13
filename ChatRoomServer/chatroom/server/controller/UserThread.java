@@ -40,13 +40,10 @@ public class UserThread extends Thread{
 		while(true){
 			try{
 				String msg = reader.readLine();
-				
-				System.out.println(msg);
-				
 				// 解析 
 				if(msg.toString().startsWith(Constants.MSG_CLIENT)){
 					// 1、用户一般消息:保存-分发-显示
-					ServerManager.getInstance().dispatchMessage(msg.toString());
+					ServerManager.getInstance().dispatchMessage(UserThread.this,msg.toString().trim());
 				}else if(msg.toString().startsWith(Constants.MSG_CLIENT_ONLINE)){
 					// 2、用户连接消息，解析该用户名称，创建User对象，更新user
 					User user = new User(msg.toString().substring(Constants.MSG_CLIENT_ONLINE.length()),

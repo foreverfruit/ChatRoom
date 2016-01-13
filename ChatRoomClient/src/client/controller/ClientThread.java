@@ -47,10 +47,14 @@ public class ClientThread extends Thread{
 							ConnectManager.getInstance().disConnect();
 						}
 					});
-				}else {
+				}else if(msg.toString().startsWith(Constants.MSG_SERVER)){
 					// 2、一般消息，显示
 					ClientWindow.getInstance().invalidate(
-							msg.toString().substring(Constants.MSG_CLIENT_ONLINE.length()),
+							msg.toString().substring(Constants.MSG_SERVER.length()),
+							Constants.INVALIDATE_REC_MSG);
+				}else if(msg.toString().startsWith(Constants.MSG_CLIENT)){
+					ClientWindow.getInstance().invalidate(
+							msg.toString().substring(Constants.MSG_CLIENT.length()),
 							Constants.INVALIDATE_REC_MSG);
 				}
 			}catch(Exception e){
