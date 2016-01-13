@@ -20,7 +20,7 @@ public class ServerManager {
 	// 服务器工作线程：只作用接受客服端的连接
 	public Thread workThread;
 	// 聊天记录
-	public StringBuilder msgRecord = new StringBuilder();	
+	public StringBuffer msgRecord = new StringBuffer();	
 	
 	// 单例
 	private static ServerManager instance = null;

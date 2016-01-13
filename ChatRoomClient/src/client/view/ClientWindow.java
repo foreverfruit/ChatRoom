@@ -19,6 +19,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
 import client.controller.ConnectManager;
@@ -72,9 +73,9 @@ public class ClientWindow extends JFrame{
 		lbHost.setHorizontalAlignment(SwingConstants.RIGHT);
 		JLabel lbNickname = new JLabel("昵称");
 		lbNickname.setHorizontalAlignment(SwingConstants.RIGHT);
-		tfPort = new JTextField(6);
-		tfHost = new JTextField(6);
-		tfNickname = new JTextField(6);
+		tfPort = new JTextField("8888",6);
+		tfHost = new JTextField("127.0.0.1",6);
+		tfNickname = new JTextField("nickname",6);
 		btConnect = new JButton("连接");
 		btDisconnect = new JButton("断开");
 		btDisconnect.setEnabled(false);
@@ -154,8 +155,11 @@ public class ClientWindow extends JFrame{
 				String txt = tfMsg.getText();
 				if( txt!=null && !txt.isEmpty() ){
 					// 拼接消息
+					String msg = Constants.MSG_CLIENT + ConnectManager.getInstance().nickname + "：" + txt;
 					// 发送给服务器
+					ConnectManager.getInstance().thread.sendMessage(msg);
 					// 刷新消息框
+					invalidate("我：" + txt, Constants.INVALIDATE_SEND_MSG);
 				}else{
 					showMessageBox("节约资源哦，俺们不发送空消息");
 				}
@@ -190,7 +194,7 @@ public class ClientWindow extends JFrame{
 		}
 		
 		// 检查ip
-		if(!tfHost.getText().matches(Constants.IP_REG)){
+		if(!tfHost.getText().trim().matches(Constants.IP_REG)){
 			showMessageBox("error:错误的ip地址");
 			return false;
 		}
@@ -204,6 +208,56 @@ public class ClientWindow extends JFrame{
 	 * @param flag 刷新的类型标志
 	 */
 	public void invalidate(String msg,int flag){
+		// 先保存消息
+		if( msg!=null && !msg.isEmpty() ){
+			ConnectManager.getInstance().msgRecord.append( msg + "\n\r" );
+		}
+		
+		if( flag == Constants.INVALIDATE_CONNECTED ){
+			// 连接到服务器后的UI刷新
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					tfPort.setEnabled(false);
+					tfNickname.setEnabled(false);
+					tfHost.setEnabled(false);
+					btConnect.setEnabled(false);
+					btSendMsg.setEnabled(true);
+					btDisconnect.setEnabled(true);
+				}
+			});
+		}else if( flag == Constants.INVALIDATE_DISCONNECTED ){
+			// 连接到服务器后的UI刷新
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					taChatRecord.setText(ConnectManager.getInstance().msgRecord.toString());
+					tfPort.setEnabled(true);
+					tfNickname.setEnabled(true);
+					tfHost.setEnabled(true);
+					btConnect.setEnabled(true);
+					btSendMsg.setEnabled(false);
+					btDisconnect.setEnabled(false);
+				}
+			});
+		}else if( flag == Constants.INVALIDATE_REC_MSG ){
+			// 连接到服务器后的UI刷新
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					taChatRecord.setText(ConnectManager.getInstance().msgRecord.toString());
+				}
+			});
+		}else if( flag == Constants.INVALIDATE_SEND_MSG ){
+			// 连接到服务器后的UI刷新
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					tfMsg.setText("");
+					taChatRecord.setText(ConnectManager.getInstance().msgRecord.toString());
+				}
+			});
+		}
 	}
 	
 	public void showMessageBox(String msg){
